@@ -46,9 +46,9 @@ model Comment {
   authorId        Int
   author          User     @relation(fields: [authorId], references: [id])
   postId          Int
-  post            Post     @relation(fields: [postId], references: [id])
+  post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   parentCommentId Int?
-  parentComment   Comment? @relation("CommentReplies", fields: [parentCommentId], references: [id])
+  parentComment   Comment? @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
 
   comments Comment[] @relation("CommentReplies")
 }

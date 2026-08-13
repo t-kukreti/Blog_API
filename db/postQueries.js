@@ -16,7 +16,54 @@ const getPostById = async(id) => {
     })
 };
 
+const getAllPostByAuthor = async(authorId) => {
+    return prisma.post.findMany({
+        where: {
+            authorId,
+        }
+    })
+};
+
+const createPost = async(data) => {
+    return prisma.post.create({
+        data,
+    })
+};
+
+const updatePost = async(id, data) => {
+    return prisma.post.update({
+        where: {
+            id,
+        },
+        data,
+    })
+};
+
+const deletePost = async(id) => {
+    return prisma.post.delete({
+        where: {
+            id,
+        }
+    })
+};
+
+const publishPost = async(id) => {
+    return prisma.post.update({
+        where: {
+            id,
+        },
+        data: {
+            published: true,
+        }
+    })
+};
+
 module.exports = {
     getAllPublishedPosts,
     getPostById,
+    getAllPostByAuthor,
+    createPost,
+    updatePost,
+    deletePost,
+    publishPost,
 }

@@ -3,6 +3,7 @@ const authQueries = require('../db/authQueries');
 const {hashPassword, verifyPassword} = require('../lib/passwordUtils');
 const jwt = require('jsonwebtoken');
 const { user } = require('../lib/prisma');
+const { isAuthor } = require('../middleware/authMiddleware');
 
 
 const postSignUpData = async(req, res, next) => {
@@ -38,7 +39,7 @@ const postLoginData = async(req, res, next) => {
         if( await verifyPassword(password, user.passwordHash)){
 
             // generate jwt token
-            jwt.sign({userId: user.id},process.env.JWT_SECRET_KEY, {expiresIn: "1h"}, (err, token)=>{
+            jwt.sign({userId: user.id}, process.env.JWT_SECRET_KEY, {expiresIn: "1h"}, (err, token)=>{
                 res.json({
                     "message": "logged in",
                     token,
@@ -76,13 +77,25 @@ const upgradeToAuthor = async(req, res, next) => {
     }
 }
 
-const testJwt = (req,res) => {
-    res.json(req.user);
+const getCurrentUser = async(req, res, next) => {
+    try{
+        const user = await authQueries.findUserById(req.user.id);
+        res.json({
+            user:{
+                id: user.id,
+                username: user.username,
+                isAuthor: user.isAuthor
+            }
+        });
+    }catch(err){
+        return next(err);
+    }
+    
 };
 
 module.exports = {
     postSignUpData,
     postLoginData,
-    testJwt,
     upgradeToAuthor, 
+    getCurrentUser,
 }
