@@ -22,9 +22,21 @@ async function findUserById(id){
     })
 }
 
+async function updateUserById(id){
+    return prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            isAuthor: true,
+        }
+    })
+}
+
 module.exports = {
     addUser,
     getUserByEmail,
     findUserById,
+    updateUserById,
 
 }

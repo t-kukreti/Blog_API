@@ -2,6 +2,7 @@ const passport = require('passport');
 const authQueries = require('../db/authQueries');
 const {hashPassword, verifyPassword} = require('../lib/passwordUtils');
 const jwt = require('jsonwebtoken');
+const { user } = require('../lib/prisma');
 
 
 const postSignUpData = async(req, res, next) => {
@@ -10,16 +11,15 @@ const postSignUpData = async(req, res, next) => {
         // check if email already exists (if does error)
         // get fields from req (validated)
         // push to db
-        const {email, username, password, isAuthor} = req.body;
+        const {email, username, password} = req.body;
         const passwordHash = await hashPassword(password);
         const user = await authQueries.addUser({
             email,
             username,
             passwordHash,
-            isAuthor,
         });
 
-        res.status(201).json({email, username, isAuthor});
+        res.status(201).json({email, username});
 
     }catch(err){
         return next(err);
@@ -41,7 +41,12 @@ const postLoginData = async(req, res, next) => {
             jwt.sign({userId: user.id},process.env.JWT_SECRET_KEY, {expiresIn: "1h"}, (err, token)=>{
                 res.json({
                     "message": "logged in",
-                    token
+                    token,
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        isAuthor: user.isAuthor
+                    }
                 });
             })   
         }else{
@@ -54,6 +59,23 @@ const postLoginData = async(req, res, next) => {
     }
 };
 
+const upgradeToAuthor = async(req, res, next) => {
+    try{
+        if(req.user.isAuthor){
+           return res.json({message: "already a author"}); 
+        }
+        const user = await authQueries.updateUserById(req.user.id);
+        res.json({
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            isAuthor: user.isAuthor,
+        });
+    }catch(err){
+        return next(err);
+    }
+}
+
 const testJwt = (req,res) => {
     res.json(req.user);
 };
@@ -62,4 +84,5 @@ module.exports = {
     postSignUpData,
     postLoginData,
     testJwt,
+    upgradeToAuthor, 
 }

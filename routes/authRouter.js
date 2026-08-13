@@ -7,6 +7,9 @@ const authRouter = Router();
 authRouter.post('/sign-up', authController.postSignUpData);
 authRouter.post('/login', authController.postLoginData);
 
+authRouter.post('/become-author', passport.authenticate('jwt',{session: false}), authController.upgradeToAuthor);
+
+
 authRouter.get('/test', passport.authenticate('jwt',{session:false}),  authController.testJwt);
 
 
