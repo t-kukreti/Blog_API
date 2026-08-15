@@ -5,6 +5,7 @@ const passport = require('passport');
 const authRouter = require('./routes/authRouter');
 const cors = require('cors');
 const postRouter = require('./routes/postRouter');
+const commentRouter = require('./routes/commentRouter');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -30,6 +31,7 @@ app.use(passport.initialize());
 
 app.use('/auth', authRouter);
 app.use('/posts', postRouter);
+app.use('/comments', commentRouter);
 
 
 app.listen(PORT, (err)=>{
