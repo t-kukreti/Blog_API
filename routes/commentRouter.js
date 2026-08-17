@@ -1,12 +1,12 @@
 const {Router} = require('express');
 const commentController = require('../controllers/commentController');
-const { authenticateJWT, loadComment, isCommentOwner } = require('../middleware/authMiddleware');
+const { authenticateJWT, loadComment, isCommentOwner, isCommentDeleted } = require('../middleware/authMiddleware');
+
 const commentRouter = Router();
 
-commentRouter.get('/posts/:id/comments', commentController.getAllComments);
-commentRouter.get('/:id/replies', commentController.getCommentReplies);
-commentRouter.post('/posts/:id/comments', authenticateJWT, commentController.postComment );
-commentRouter.patch('/:id', authenticateJWT, loadComment, isCommentOwner, commentController.editComment);
-commentRouter.delete('/:id', authenticateJWT, loadComment, isCommentOwner, commentController.deleteComment);
+
+commentRouter.get('/:commentId/replies', commentController.getCommentReplies);
+commentRouter.patch('/:commentId', authenticateJWT, loadComment, isCommentDeleted, isCommentOwner, commentController.editComment);
+commentRouter.delete('/:commentId', authenticateJWT, loadComment, isCommentDeleted, isCommentOwner, commentController.softDeleteComment);
 
 module.exports = commentRouter;

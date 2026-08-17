@@ -1,5 +1,6 @@
 const passport = require('passport');
 const {getPostById: findPostById} = require('../db/postQueries');
+const {getCommentById: findCommentById} = require('../db/commentQueries');
 
 const authenticateJWT = passport.authenticate('jwt', {session: false});
 
@@ -68,6 +69,40 @@ const isOwner = (req, res, next) => {
 return next();
 };
 
+const loadComment = async(req, res, next) => {
+    try{
+        const comment = await findCommentById(Number(req.params.id));
+        
+        if(! comment){
+            return res.status(404).json({
+                message: "No such comment exists",
+            })
+        }
+        req.comment = comment;
+        return next();
+    }catch(err){
+        return next(err);
+    }
+};
+
+const isCommentOwner = (req, res, next) => {
+    if(req.user.id !== req.comment.authorId){
+        return res.status(403).json({
+            message: "You re not the owner of this comment",
+        })
+    }
+    return next();
+};
+
+const isCommentDeleted = (req, res, next) => {
+    if(req.comment.deleted){
+        return res.status(403).json({
+            message: "Comment is already deleted"
+        })
+    }
+    return next();
+};
+
 
 module.exports = {
     authenticateJWT,
@@ -76,4 +111,7 @@ module.exports = {
     isOwner,
     optionalAuthenticateJwt,
     canViewPost,
+    loadComment,
+    isCommentOwner,
+    isCommentDeleted,
 }

@@ -39,22 +39,38 @@ const getReplies = async(commentId) => {
     });
 };
 
-const addComment = async(req, res, next) => {
-    try{
-
-    }catch(err){
-        
-    }
+const addComment = async(data) => {
+    return prisma.comment.create({
+        data,
+    });
 };
-const editCommentById = async() => {};
-const deleteCommentById = async() => {};
+
+const editComment = async(commentId, data) => {
+    return prisma.comment.update({
+        where: {
+            id: commentId,
+        },
+        data,
+    })
+};
+
+const softDeleteComment = async(commentId) => {
+    return prisma.comment.update({
+        where: {
+            id: commentId,
+        },
+        data: {
+            deleted: true,
+        }
+    })
+};
 
 
 module.exports = {
     getAllComments,
     getCommentById,
     addComment,
-    editCommentById,
-    deleteCommentById,
+    editComment,
+    softDeleteComment,
     getReplies
 }
