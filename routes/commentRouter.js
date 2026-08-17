@@ -6,6 +6,7 @@ const commentRouter = Router();
 
 
 commentRouter.get('/:commentId/replies', commentController.getCommentReplies);
+
 commentRouter.patch('/:commentId', authenticateJWT, loadComment, isCommentDeleted, isCommentOwner, commentController.editComment);
 commentRouter.delete('/:commentId', authenticateJWT, loadComment, isCommentDeleted, isCommentOwner, commentController.softDeleteComment);
 

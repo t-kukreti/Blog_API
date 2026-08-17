@@ -71,7 +71,7 @@ return next();
 
 const loadComment = async(req, res, next) => {
     try{
-        const comment = await findCommentById(Number(req.params.id));
+        const comment = await findCommentById(Number(req.params.commentId));
         
         if(! comment){
             return res.status(404).json({

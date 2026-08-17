@@ -7,6 +7,11 @@ const getAllComments = async(postId) => {
             parentCommentId: null,
         },
         include: {
+            author: {
+                select: {
+                    username: true,
+                }
+            },
             _count: {
                 select: {
                     comments: true,
@@ -20,6 +25,13 @@ const getCommentById = async(id) => {
     return prisma.comment.findUnique({
         where: {
             id,
+        },
+        include: {
+            author: {
+                select: {
+                    username: true,
+                }
+            }
         }
     })
 };
@@ -30,6 +42,11 @@ const getReplies = async(commentId) => {
             parentCommentId: commentId,
         },
         include: {
+            author: {
+                select: {
+                    username: true,
+                }
+            },
             _count: {
                 select: {
                     comments: true,
@@ -42,6 +59,13 @@ const getReplies = async(commentId) => {
 const addComment = async(data) => {
     return prisma.comment.create({
         data,
+        include: {
+            author: {
+                select: {
+                    username: true,
+                }
+            }
+        }
     });
 };
 

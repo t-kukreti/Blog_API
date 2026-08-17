@@ -18,7 +18,9 @@ postRouter.post('/:postId/comments', authenticateJWT, commentController.postComm
 
 postRouter.get('/:id', optionalAuthenticateJwt, loadPost, canViewPost,  postController.getPostById);
 postRouter.post('/', authenticateJWT, isAuthor, postController.createPostByAuthor);
+
 postRouter.patch('/:id/publish', authenticateJWT, isAuthor, loadPost, isOwner, postController.publishPostByAuthor);
+
 postRouter.patch('/:id', authenticateJWT, isAuthor, loadPost, isOwner, postController.editPostByAuthor);
 postRouter.delete('/:id', authenticateJWT, isAuthor, loadPost, isOwner, postController.deletePostByAuthor);
 

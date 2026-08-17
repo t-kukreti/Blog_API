@@ -47,15 +47,15 @@ const deletePost = async(id) => {
     })
 };
 
-const publishPost = async(id) => {
-    return prisma.post.update({
-        where: {
-            id,
-        },
-        data: {
-            published: true,
-        }
-    })
+const publishPost = async (id, currentStatus) => {
+  return prisma.post.update({
+    where: {
+      id,
+    },
+    data: {
+      published: !currentStatus,
+    },
+  });
 };
 
 module.exports = {

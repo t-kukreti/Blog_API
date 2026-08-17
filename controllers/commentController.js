@@ -2,13 +2,16 @@ const commentQueries = require('../db/commentQueries');
 
 const getAllComments = async(req, res, next) => {
     try{
-        const comments = await commentQueries.getAllComments(req.postId);
+        const comments = await commentQueries.getAllComments(Number(req.params.postId));
         const response = comments.map(comment => ({ 
             id: comment.id,
             content: comment.content,
             createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt,
             authorId: comment.authorId,
             replyCount: comment._count.comments,
+            deleted: comment.deleted,
+            username: comment.author.username,
         }));
         res.json(response);
 
@@ -24,8 +27,11 @@ const getCommentReplies = async(req, res, next) => {
             id: reply.id,
             content: reply.content,
             createdAt: reply.createdAt,
+            updatedAt: reply.updatedAt,
             authorId: reply.authorId,
             replyCount: reply._count.comments,
+            deleted: reply.deleted,
+            username: reply.author.username,
         }));
         res.json(response);
     }catch(err){
@@ -67,10 +73,13 @@ const postComment = async(req, res, next) => {
             message: "comment created successfully",
             postedComment: {
                 id: postedComment.id,
-                content,
-                authorId,
-                parentCommentId: parentId,
-                postId
+                content: postedComment.content,
+                createdAt: postedComment.createdAt,
+                updatedAt: postedComment.updatedAt,
+                authorId: postedComment.authorId,
+                parentCommentId: postedComment.parentCommentId,
+                replyCount: 0,
+                username: postedComment.author.username,
             }
         });
 
@@ -95,6 +104,7 @@ const editComment = async(req, res, next) => {
                 id: updatedComment.id,
                 content: updatedComment.content,
                 parentId: updatedComment.parentCommentId,
+                updatedAt: updatedComment.updatedAt,
             }
         })
 
