@@ -1,5 +1,7 @@
 const postQueries = require('../db/postQueries');
-const { post } = require('../lib/prisma');
+const { matchedData } = require('express-validator');
+
+//TODO: responses standardization 
 
 const getAllPost = async (req, res, next) => {
     try{
@@ -41,10 +43,8 @@ const getAllPostByAuthor = async(req, res, next) => {
 
 const createPostByAuthor = async(req, res, next) => {
     try{
-
-        // add validation later.
         const authorId = req.user.id;
-        const {title, content} = req.body;
+        const {title, content} = matchedData(req);
 
         const post = await postQueries.createPost({
             title,
@@ -69,8 +69,7 @@ const createPostByAuthor = async(req, res, next) => {
 
 const editPostByAuthor = async(req, res, next) => {
     try{    
-        // add validation here.
-        const { title, content} = req.body;
+        const { title, content} = matchedData(req);
         const postId = req.post.id;
 
         const updatedPost = await postQueries.updatePost(postId,{
@@ -95,16 +94,8 @@ const editPostByAuthor = async(req, res, next) => {
 
 const deletePostByAuthor = async(req, res, next) => {
     try{    
-        const deletedPost = await postQueries.deletePost(req.post.id);
-        if(!deletedPost){
-            res.json({message: "couldn't find post to delete"});
-        }
-        res.status(204).json({
-            message: "post deleted successfully",
-            post: {
-                deletedPost,
-            }
-        });
+        await postQueries.deletePost(req.post.id);
+        return res.status(204).send();
     }catch(err){
         return next(err);
     }

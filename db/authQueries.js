@@ -12,15 +12,23 @@ async function getUserByEmail(email){
             email,
         }
     });
+};
 
-}
+const getUserByUsername = async(username) => {
+    return prisma.user.findUnique({
+        where: {
+            username,
+        }
+    })
+};
+
 async function findUserById(id){
     return prisma.user.findUnique({
         where:{
             id,
         }
     })
-}
+};
 
 async function updateUserById(id){
     return prisma.user.update({
@@ -31,7 +39,7 @@ async function updateUserById(id){
             isAuthor: true,
         }
     })
-}
+};
 
 
 
@@ -40,5 +48,6 @@ module.exports = {
     getUserByEmail,
     findUserById,
     updateUserById,
+    getUserByUsername
 
 }

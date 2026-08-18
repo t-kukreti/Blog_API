@@ -1,3 +1,6 @@
+// TODO: split this into different modules
+
+
 const passport = require('passport');
 const {getPostById: findPostById} = require('../db/postQueries');
 const {getCommentById: findCommentById} = require('../db/commentQueries');
@@ -8,7 +11,8 @@ const optionalAuthenticateJwt = (req, res, next) => {
     if(!req.headers.authorization){
         return next();
     }
-    passport.authenticate('jwt', {session: true}, (err, user)=>{
+
+    passport.authenticate('jwt', {session: false}, (err, user)=>{
         if(err){
             return next(err);
         }

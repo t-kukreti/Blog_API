@@ -34,6 +34,19 @@ app.use('/posts', postRouter);
 app.use('/comments', commentRouter);
 
 
+// error middleware
+app.use((err, req, res, next) => {
+    console.error(err);
+    
+    res.status(500).json({
+        error: {
+            code: "INTERNAL_ERROR",
+            message: "Something went wrong"
+        }
+    })
+});
+
+
 app.listen(PORT, (err)=>{
     if(err) throw err;
     console.log(`server started on ${PORT}`);

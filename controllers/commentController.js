@@ -1,11 +1,14 @@
 const commentQueries = require('../db/commentQueries');
+const { matchedData } = require('express-validator');
+
+//TODO: responses standardization 
 
 const getAllComments = async(req, res, next) => {
     try{
         const comments = await commentQueries.getAllComments(Number(req.params.postId));
         const response = comments.map(comment => ({ 
             id: comment.id,
-            content: comment.content,
+            content: comment.deleted ? '[Deleted]' : comment.content,
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,
             authorId: comment.authorId,
@@ -25,7 +28,7 @@ const getCommentReplies = async(req, res, next) => {
         const replies = await commentQueries.getReplies(Number(req.params.commentId));
         const response = replies.map((reply) => ({
             id: reply.id,
-            content: reply.content,
+            content: reply.deleted ? '[Deleted]' : reply.content,
             createdAt: reply.createdAt,
             updatedAt: reply.updatedAt,
             authorId: reply.authorId,
@@ -41,7 +44,7 @@ const getCommentReplies = async(req, res, next) => {
 
 const postComment = async(req, res, next) => {
     try{
-        const { content, parentCommentId } = req.body;
+        const { content, parentCommentId } = matchedData(req);
         const parentId = parentCommentId ?? null;
         const postId = Number(req.params.postId);
         const authorId = req.user.id;
@@ -91,7 +94,7 @@ const postComment = async(req, res, next) => {
 
 const editComment = async(req, res, next) => {
     try{
-        const {content} = req.body;
+        const {content} = matchedData(req);
         const commentId = req.comment.id;
 
         const updatedComment = await commentQueries.editComment(commentId, {
